@@ -3,7 +3,6 @@ package com.topica.demojspservlet.repository;
 import com.topica.demojspservlet.constants.TodoQuery;
 import com.topica.demojspservlet.model.Todo;
 import com.topica.demojspservlet.utils.connection.MySQLConnectionUtil;
-import com.topica.demojspservlet.utils.memcached.MemcachedClientUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,19 +10,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import net.spy.memcached.MemcachedClient;
 
 public class TodoRepository {
 
-  private MemcachedClient memcachedClient = MemcachedClientUtil.getMemcachedClient();
-
   public Todo getOne(Long id) {
-
-    Todo todo = (Todo) memcachedClient.get("Todo" + id.toString());
-
-    if (todo != null){
-      return todo;
-    }
 
     Connection connection = new MySQLConnectionUtil().getConnection();
     String query = TodoQuery.GET_BY_ID;
@@ -35,11 +25,10 @@ public class TodoRepository {
       ResultSet resultSet = preparedStatement.executeQuery();
 
       if (resultSet.next()) {
-        todo = new Todo();
+        Todo todo = new Todo();
         todo.setId(id);
         todo.setName(resultSet.getString("name"));
         todo.setDescription(resultSet.getString("description"));
-        memcachedClient.set("Todo"+id.toString(), 3600, todo);
 
         return todo;
       }
@@ -66,16 +55,13 @@ public class TodoRepository {
     try {
       Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery(query);
-
-      int records = 1;
       while (resultSet.next()) {
-        //Todo todo = resultSet.getObject(records, Todo.class);
+        // Todo todo = resultSet.getObject(records, Todo.class);
         Todo todo = new Todo();
         todo.setId(resultSet.getLong("id"));
         todo.setName(resultSet.getString("name"));
         todo.setDescription(resultSet.getString("description"));
         todoList.add(todo);
-        records++;
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -86,27 +72,24 @@ public class TodoRepository {
         e.printStackTrace();
       }
     }
-
     return todoList;
   }
 
   public int insert(Todo object) {
     Connection connection = new MySQLConnectionUtil().getConnection();
 
-    String query = TodoQuery.INSERT_ONE;
+    String insertquery = TodoQuery.INSERT_ONE;
 
     int rowCount = 0;
     try {
-      PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+      PreparedStatement preparedStatement = connection.prepareStatement(insertquery, Statement.RETURN_GENERATED_KEYS);
       preparedStatement.setString(1, object.getName());
       preparedStatement.setString(2, object.getDescription());
-
       rowCount = preparedStatement.executeUpdate();
       ResultSet rs = preparedStatement.getGeneratedKeys();
-      if (rs.next()){
+      if (rs.next()) {
         Long lastInsertedId = rs.getLong(1);
         object.setId(lastInsertedId);
-        memcachedClient.set("Todo"+lastInsertedId.toString(), 3600, object);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -134,8 +117,8 @@ public class TodoRepository {
       preparedStatement.setLong(3, object.getId());
 
       rowCount = preparedStatement.executeUpdate();
-      if (rowCount > 0){
-        memcachedClient.set("Todo"+object.getId(), 3600, object);
+      if (rowCount > 0) {
+
       }
 
     } catch (SQLException e) {
@@ -155,11 +138,6 @@ public class TodoRepository {
     Connection connection = new MySQLConnectionUtil().getConnection();
 
     String query = TodoQuery.DELETE_ONE;
-
-    Object oldTodo = memcachedClient.get("Todo"+id.toString());
-    if (oldTodo != null){
-      memcachedClient.delete("Todo"+id.toString());
-    }
 
     int rowCount = 0;
     try {

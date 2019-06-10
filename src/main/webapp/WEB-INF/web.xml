@@ -6,7 +6,13 @@
 
   <display-name>LabJdbc</display-name>
 
+  <locale-encoding-mapping-list>
+    <locale-encoding-mapping>
+        <locale>zh_CN</locale>
+        <encoding>UTF-8</encoding>
+    </locale-encoding-mapping> 
+  </locale-encoding-mapping-list>
   <welcome-file-list>
-    <welcome-file>todoCRUD.jsp</welcome-file>
+    <welcome-file>/</welcome-file>
   </welcome-file-list>
 </web-app>

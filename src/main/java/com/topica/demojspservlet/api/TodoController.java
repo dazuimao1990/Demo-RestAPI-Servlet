@@ -14,28 +14,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 //import lombok.extern.slf4j.Slf4j;
 
-@WebServlet(name = "TodoController", urlPatterns = {"/api/todo/*"})
+@WebServlet(name = "TodoController", urlPatterns = { "/api/todos/*" })
 public class TodoController extends HttpServlet {
 
   private TodoService todoService = new TodoServiceImpl();
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    req.setCharacterEncoding("utf-8");
     String pathInfo = req.getPathInfo();
 
-    if (pathInfo == null || pathInfo.equals("/")) { //  GET /api/todo
+    if (pathInfo == null || pathInfo.equals("/")) { // GET /api/todos
       List<Todo> todoList = todoService.getAll();
-      RequestResponseDataUtil.sendAsJson(resp, todoList);
-      System.out.println(resp.getContentType());
-      resp.sendError(HttpServletResponse.SC_OK);
-
-     // log.info("get all todo size: ", todoList.size());
+      APIResult re = new APIResult();
+      re.todoList = todoList;
+      re.total = todoList.size();
+      re.message = "success get todo lists";
+      RequestResponseDataUtil.sendAsJson(resp, re);
+      System.out.println("success get todo lists");
+      // log.info("get all todo size: ", todoList.size());
       return;
     }
 
-    String[] splits = pathInfo.split("/"); //  GET /api/todo/{id}
+    String[] splits = pathInfo.split("/"); // GET /api/todos/{id}
     if (splits.length != 2) {
       resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
       return;
@@ -48,26 +49,24 @@ public class TodoController extends HttpServlet {
       Todo todo = todoService.getOne(Long.parseLong(todoId));
       if (todo == null) {
         resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-    //    log.info("not found: " + todoId);
+        // log.info("not found: " + todoId);
 
       } else {
-    //    log.info("found: " + todoId);
+        // log.info("found: " + todoId);
         RequestResponseDataUtil.sendAsJson(resp, todo);
       }
     } else {
       resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
     }
-
-    todoService.getAll();
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+    req.setCharacterEncoding("utf-8");
     String pathInfo = req.getPathInfo();
     ObjectMapper mapper = new ObjectMapper();
-    if (pathInfo == null || pathInfo.equals("/")) { //  POST /api/todo
+    if (pathInfo == null || pathInfo.equals("/")) { // POST /api/todos
       String body = RequestResponseDataUtil.getRequest(req);
       Todo todo = mapper.readValue(body, Todo.class);
       int rowCount = todoService.insert(todo);
@@ -83,12 +82,12 @@ public class TodoController extends HttpServlet {
   }
 
   @Override
-  protected void doPut(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+    req.setCharacterEncoding("utf-8");
     String pathInfo = req.getPathInfo();
     ObjectMapper mapper = new ObjectMapper();
-    if (pathInfo == null || pathInfo.equals("/")) { //  PUT /api/todo
+    if (pathInfo == null || pathInfo.equals("/")) { // PUT /api/todos
       String body = RequestResponseDataUtil.getRequest(req);
       Todo todo = mapper.readValue(body, Todo.class);
       int rowCount = todoService.update(todo);
@@ -104,17 +103,17 @@ public class TodoController extends HttpServlet {
   }
 
   @Override
-  protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+    req.setCharacterEncoding("utf-8");
     String pathInfo = req.getPathInfo();
 
-    if (pathInfo == null || pathInfo.equals("/")) { //  DELETE /api/todo
+    if (pathInfo == null || pathInfo.equals("/")) { // DELETE /api/todos
       resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
 
-    String[] splits = pathInfo.split("/"); //  DELETE /api/todo/{id}
+    String[] splits = pathInfo.split("/"); // DELETE /api/todos/{id}
     if (splits.length != 2) {
       resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
       return;

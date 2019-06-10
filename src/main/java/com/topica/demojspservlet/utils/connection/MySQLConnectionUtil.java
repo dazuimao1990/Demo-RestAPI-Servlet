@@ -1,12 +1,13 @@
 package com.topica.demojspservlet.utils.connection;
 
-import com.topica.demojspservlet.utils.connection.ConnectionUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MySQLConnectionUtil implements ConnectionUtils {
 
@@ -17,7 +18,6 @@ public class MySQLConnectionUtil implements ConnectionUtils {
   @Override
   public Connection getConnection() {
     Connection connection = null;
-
     try {
       Class.forName("com.mysql.jdbc.Driver");
       this.init();
@@ -26,8 +26,16 @@ public class MySQLConnectionUtil implements ConnectionUtils {
       e.printStackTrace();
     } catch (SQLException e) {
       e.printStackTrace();
+    } catch (Exception e) {
+      throw e;
     }
-
+    if (connection == null) {
+      try {
+        throw new Exception("mysql connection is null");
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
     return connection;
   }
 
@@ -43,12 +51,11 @@ public class MySQLConnectionUtil implements ConnectionUtils {
         return;
       }
 
-      //load a properties file from class path, inside static method
+      // load a properties file from class path, inside static method
       properties.load(input);
       this.JDBC_URL = properties.getProperty("jdbc_mysql_url");
       this.username = properties.getProperty("username");
       this.password = properties.getProperty("password");
-
     } catch (IOException ex) {
       ex.printStackTrace();
     } finally {

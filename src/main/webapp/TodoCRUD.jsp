@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=utf-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!DOCTYPE HTML>
 <html>
@@ -23,7 +24,7 @@
         </tr>
         <tr>
             <td>Description</td>
-            <td><textarea rows="2" cols="44" name="Description">${todo.Description}</textarea></td>
+            <td><textarea rows="2" cols="44" name="description">${todo.Description}</textarea></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
@@ -43,12 +44,12 @@
             <th>Description</th>
             <th>&nbsp;</th>
         </tr>
-        <c:forEach var="todo" items="${todos.rows}">
+        <c:forEach var="todo" items="${todos}">
             <tr>
-                <td>${todo.Id}</td>
-                <td>${todo.Name}</td>
-                <td>${todo.Description}</td>
-                <td><a href="?lnkEdit&txtId=${c.Id}">Edit</a></td>
+                <td>${todo.getId()}</td>
+                <td>${todo.getName()}</td>
+                <td>${todo.getDescription()}</td>
+                <td><a href="?lnkEdit&txtId=${todo.getId()}">Edit</a></td>
             </tr>
         </c:forEach>
     </table>
