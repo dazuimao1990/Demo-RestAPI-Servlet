@@ -8,4 +8,5 @@ RUN mvn clean install
 
 FROM goodrainapps/tomcat:8.5.20-jre8-alpine as runtime
 COPY --from=builder  /app/target/DemoJSPServlet-1.0-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
+RUN rm -rf /usr/local/tomcat/webapps/ROOT
 EXPOSE 8080
