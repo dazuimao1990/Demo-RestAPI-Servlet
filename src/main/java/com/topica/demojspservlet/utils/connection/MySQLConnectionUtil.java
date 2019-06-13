@@ -53,9 +53,22 @@ public class MySQLConnectionUtil implements ConnectionUtils {
 
       // load a properties file from class path, inside static method
       properties.load(input);
-      this.JDBC_URL = properties.getProperty("jdbc_mysql_url");
-      this.username = properties.getProperty("username");
-      this.password = properties.getProperty("password");
+      if (System.getenv("MYSQL_HOST") != null) {
+        this.JDBC_URL = String.format("jdbc:mysql://%s:%s/%s?useUnicode=true&characterEncoding=utf-8",
+            System.getenv("MYSQL_HOST"), System.getenv("MYSQL_PORT"), System.getenv("MYSQL_DATABASE"));
+      } else {
+        this.JDBC_URL = properties.getProperty("jdbc_mysql_url");
+      }
+      if (System.getenv("MYSQL_USER") != null) {
+        this.username = System.getenv("MYSQL_USER");
+      } else {
+        this.username = properties.getProperty("username");
+      }
+      if (System.getenv("MYSQL_PASSWORD") != null) {
+        this.password = System.getenv("MYSQL_PASSWORD");
+      } else {
+        this.password = properties.getProperty("password");
+      }
     } catch (IOException ex) {
       ex.printStackTrace();
     } finally {
