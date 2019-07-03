@@ -29,7 +29,7 @@ public class TodoController extends HttpServlet {
       APIResult re = new APIResult();
       re.todoList = todoList;
       re.total = todoList.size();
-      re.version = "v1";
+      re.version = "v2";
       re.message = "success get todo lists";
       RequestResponseDataUtil.sendAsJson(resp, re);
       System.out.println("success get todo lists");
