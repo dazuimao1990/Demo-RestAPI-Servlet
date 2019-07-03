@@ -8,4 +8,5 @@ public class APIResult extends Object {
     public List<Todo> todoList;
     public String message;
     public int total;
+    public String version;
 }
