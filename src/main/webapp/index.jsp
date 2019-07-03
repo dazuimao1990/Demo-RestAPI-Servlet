@@ -53,6 +53,7 @@
         </tr>
     </c:forEach>
 </table>
+<div>API-VERSION: ${api_version}</div>
 <div>${errorMsg}</div>
 </body>
 </html>

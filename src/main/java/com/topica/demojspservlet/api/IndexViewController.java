@@ -43,6 +43,7 @@ public class IndexViewController extends HttpServlet {
             in.close();
             JSONObject json = JSONObject.parseObject(result.toString());// 把String对象转为JSONObject对象
             List<Todo> todoList = new ArrayList<>();
+            String version = json.getString("version");
             JSONArray jsonarray = json.getJSONArray("todoList");
             for (int i = 0; i < jsonarray.size(); i++) {
                 Todo todo = new Todo();
@@ -53,8 +54,10 @@ public class IndexViewController extends HttpServlet {
                 todoList.add(todo);
             }
             req.setAttribute("todos", todoList);
+            req.setAttribute("api_version", version);
         } else {
             req.setAttribute("todos", null);
+            req.setAttribute("api_version", "");
         }
         if (code == 429) {
             req.setAttribute("errorMsg", "后端服务限流");
