@@ -1,1 +1,1 @@
-web: sh run.sh
+web: bash run.sh
