@@ -13,4 +13,4 @@ fi
 PORT=${PORT:-5000}
 sleep ${PAUSE:-0}
 #最终启动命令
-exec java -Dserver.port=$PORT $JAVA_OPTS -jar target/*.jar
+exec java $JAVA_OPTS -jar /opt/webapp-runner.jar --port ${PORT} target/*.war
